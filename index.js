@@ -51,9 +51,13 @@ async function run() {
 
     //daily_meal
 
-    app.get('/daily_meal',async(req,res)=>{
+    app.get('/meals/:sid',async(req,res)=>{
+        
+        const { sid } = req.params;
 
-        const result = await dailyMealCollection.find().toArray();
+        const result = await dailyMealCollection
+        .find({sid})
+        .toArray();
 
         console.log(result);
 
@@ -88,16 +92,33 @@ async function run() {
 
 
 
+    //post api : save or updated meal
+
+    app.post("/meals",async(req,res)=>{
+
+        try{
+
+            const {sid,date,breakfast,lunch,dinner,locked,updatedAt} = req.body;
+
+            if(!sid) return res.status(400).json({error:"sid is required"});
 
 
+            const result = await dailyMealCollection.updateOne(
+                {sid,date},
+                {
+                    $set:{breakfast,lunch,dinner,locked,updatedAt:new Date(updatedAt)},
+                },
+                {upsert:true}
+            );
 
+            res.json({success:true,result});
 
+        }catch(err){
+            console.error(err);
+            res.status(500).json({error:"Internal server error"});
+        }
 
-
-
-
-
-
+    });
 
 
 
