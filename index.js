@@ -31,10 +31,16 @@ async function run() {
 
 
     const db = client.db('meal_db')
-    const userCollection = db.collection('user')
+
+    const userCollection = db.collection('user') //user collection
+    const dailyMealCollection = db.collection('daily_meal') //daily_meal collection
+    const bazarCollection = db.collection('bazar') //bazar collection
+    const guestMealCollection = db.collection('guestmeal') //guestmeal collection
+
+
 
     //user:
-    
+
     app.get('/user',async(req,res)=>{
         const result = await userCollection.find().toArray();
 
@@ -42,6 +48,46 @@ async function run() {
 
         res.send(result);
     })
+
+    //daily_meal
+
+    app.get('/daily_meal',async(req,res)=>{
+
+        const result = await dailyMealCollection.find().toArray();
+
+        console.log(result);
+
+        res.send(result);
+
+    })
+
+    //bazar:
+
+    app.get('/bazar',async(req,res)=>{
+
+        const result = await bazarCollection.find().toArray();
+
+        console.log(result);
+
+        res.send(result);
+
+    })
+
+
+    //guest_meal:
+
+    app.get('/guest_meal',async(req,res)=>{
+
+        const result = await guestMealCollection.find().toArray();
+
+        console.log(result);
+
+        res.send(result);
+
+    })
+
+
+
 
 
 
