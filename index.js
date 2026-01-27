@@ -39,15 +39,21 @@ async function run() {
 
 
 
+
+
     //user:
 
-    app.get('/user',async(req,res)=>{
-        const result = await userCollection.find().toArray();
+    app.get('/users/profile/:email',async(req,res)=>{
+
+        const {email} = req.params;
+        
+        const result = await userCollection.findOne({email});
 
         console.log(result);
 
         res.send(result);
     })
+
 
     //daily_meal
 
@@ -76,6 +82,17 @@ async function run() {
         res.send(result);
 
     })
+
+    //bazar post:
+
+    app.post("/bazar", async (req, res) => {
+
+        const { date, description, amount } = req.body;
+        const data = await bazarCollection.insertOne({ date, description, amount });
+        
+        res.json(data);
+    });
+
 
 
     //guest_meal:
@@ -119,6 +136,12 @@ async function run() {
         }
 
     });
+
+
+    
+
+
+
 
 
 
