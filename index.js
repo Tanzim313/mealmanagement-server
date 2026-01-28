@@ -71,7 +71,78 @@ async function run() {
 
 
 
+    app.get("/users",async(req,res)=>{
 
+        const data = await userCollection.find().toArray();
+
+        console.log(data);
+
+        res.send(data);
+
+    })
+
+    //users added database:
+
+    app.post("/users", async (req, res) => {
+    
+        try {
+            const {
+                sid,
+                name,
+                meal_serial,
+                room_num,
+                department,
+                email,
+                phone,
+                password,
+                role,
+                status,
+    } = req.body;
+
+    // required field check
+    if (!sid || !name || !meal_serial || !password) {
+      return res.status(400).json({
+        message: "Required fields missing",
+      });
+    }
+
+    //duplicate SID check
+    const existingUser = await userCollection.findOne({ sid });
+    if (existingUser) {
+      return res.status(409).json({
+        message: "Resident with this SID already exists",
+      });
+    }
+
+    const newResident = {
+      sid,
+      name,
+      meal_serial,
+      room_num,
+      department,
+      email,
+      phone,
+      password,
+      role: role || "student",
+      status:status,
+      createdAt: new Date(),
+    };
+
+    const result = await userCollection.insertOne(newResident);
+
+    res.status(201).json({
+      success: true,
+      message: "Resident added successfully",
+      insertedId: result.insertedId,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+});
 
 
 
@@ -83,6 +154,27 @@ async function run() {
       console.log(result);
       res.send(result);
     });
+
+    //user role updated api:
+
+    app.patch("/users/:sid/role",async(req,res)=>{
+
+        const sid = req.params.sid;
+        const {role}=req.body;
+
+
+        const result = await userCollection.updateOne(
+
+            {sid:sid},
+            {$set:{role:role}}
+
+        );
+
+        res.json({
+            success:true,
+            message: `Role updated to ${role}`,
+        });
+    })
 
 
 
