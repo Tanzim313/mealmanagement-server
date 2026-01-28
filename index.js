@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = 3000;
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 require("dotenv").config();
 
@@ -51,7 +53,7 @@ async function run() {
     //login
     app.post("/login", async (req, res) => {
       try {
-        const { email, password } = req.body;
+            const { email, password } = req.body;
         const user = await userCollection.findOne({ email });
         if (!user) return res.status(404).json({ error: "User not found" });
         const valid = await bcrypt.compare(password, user.passwordHash);
