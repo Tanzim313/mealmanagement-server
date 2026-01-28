@@ -69,6 +69,13 @@ async function run() {
       }
     });
 
+
+
+
+
+
+
+
     //user:
     app.get("/users/profile/:email", async (req, res) => {
       const { email } = req.params;
@@ -77,9 +84,10 @@ async function run() {
       res.send(result);
     });
 
-    //daily_meal
 
-<<<<<<< HEAD
+
+    //daily_meal:
+
     app.get('/meals/:sid',async(req,res)=>{
         
         const { sid } = req.params;
@@ -92,78 +100,19 @@ async function run() {
 
         res.send(result);
 
-    })
-
-    //bazar:
-
-    app.get('/bazar',async(req,res)=>{
-
-        const result = await bazarCollection.find().toArray();
-
-        console.log(result);
-
-        res.send(result);
-
-    })
-
-
-    //bazar post:
-
-    app.post("/bazar", async (req, res) => {
-
-        const { date, description, amount } = req.body;
-        const data = await bazarCollection.insertOne({ date, description, amount });
-        
-        res.json(data);
-=======
-    app.get("/meals/:sid", async (req, res) => {
-      const { sid } = req.params;
-      const result = await dailyMealCollection.find({ sid }).toArray();
-      console.log(result);
-      res.send(result);
->>>>>>> 4b78a2ad8b74049dc22fbd974d71425b3ccf38a1
     });
 
-    //bazar:
-    app.get("/bazar", async (req, res) => {
-      const result = await bazarCollection.find().toArray();
-      console.log(result);
-      res.send(result);
-    });
-
-    //bazar post:
-    app.post("/bazar", async (req, res) => {
-      const { date, description, amount } = req.body;
-      const data = await bazarCollection.insertOne({
-        date,
-        description,
-        amount,
-      });
-
-      res.json(data);
-    });
-
-    //guest_meal:
-    app.get("/guest_meal", async (req, res) => {
-      const result = await guestMealCollection.find().toArray();
-
-      console.log(result);
-
-      res.send(result);
-    });
-
-    //post api : save or updated meal
-
+     //post api : save or updated meal
     app.post("/meals", async (req, res) => {
-      try {
+    try {
         const { sid, date, breakfast, lunch, dinner, locked, updatedAt } =
-          req.body;
+        req.body;
 
         if (!sid) return res.status(400).json({ error: "sid is required" });
 
         const result = await dailyMealCollection.updateOne(
-          { sid, date },
-          {
+        { sid, date },
+        {
             $set: {
               breakfast,
               lunch,
@@ -181,6 +130,50 @@ async function run() {
         res.status(500).json({ error: "Internal server error" });
       }
     });
+
+
+
+
+    //bazar get:
+    
+    app.get('/bazar',async(req,res)=>{
+
+        const result = await bazarCollection.find().toArray();
+
+        console.log(result);
+
+        res.send(result);
+
+    })
+
+
+    //bazar post:
+    app.post("/bazar", async (req, res) => {
+      const { date, description, amount } = req.body;
+      const data = await bazarCollection.insertOne({
+        date,
+        description,
+        amount,
+      });
+
+      res.json(data);
+    });
+
+
+
+    //guest_meal:
+    app.get("/guest_meal", async (req, res) => {
+      const result = await guestMealCollection.find().toArray();
+
+      console.log(result);
+
+      res.send(result);
+    });
+
+
+
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
