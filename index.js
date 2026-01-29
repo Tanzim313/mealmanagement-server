@@ -176,6 +176,28 @@ async function run() {
         });
     })
 
+    //users status updated :
+
+    app.patch("/users/:sid/status",async(req,res)=>{
+      try{
+
+        const {sid}= req.params;
+        const {status} = req.body;
+
+        const result = await userCollection.updateOne(
+          {sid:sid},
+          {$set:{status:status}}
+        );
+
+        res.json({
+          success: true,
+          message:"Status updated",
+        });
+
+      }catch(error){
+        res.status(500).json({message:"server error"});
+      }
+    })
 
 
     //daily_meal:
