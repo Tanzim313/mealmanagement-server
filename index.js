@@ -84,6 +84,20 @@ app.post("/login", async (req, res) => {
 
     })
 
+
+    // Get single student by SID
+    
+    app.get("/users/:sid", async (req, res) => {
+        
+      const sid = req.params.sid;
+      const user = await userCollection.findOne({ sid: sid });
+      
+      if (!user) return res.status(404).json({ message: "User not found" });
+      res.json(user);
+});
+
+
+
     //users added database:
 
     app.post("/users", async (req, res) => {
@@ -214,7 +228,65 @@ app.post("/login", async (req, res) => {
     })
 
 
-    //daily_meal:
+  //manager dashboard er jnno meals api:
+
+  app.get("/meals", async (req, res) => {
+    try{
+
+      const { date,month } = req.query;
+
+      let filter = {};
+
+      if(date){
+        filter.date = date;    // if date -> single day...
+      }
+      //if month -> full month...
+      else if(month){
+        const [year,mon] = month.split("-");
+
+        const startDate = new Date(Number(year),Number(mon)-1,1);
+        const endDate = new Date(Number(year),Number(mon),0);
+
+        const start = startDate.toISOString().split("T")[0];
+        const end = endDate.toISOString().split("T")[0];
+
+
+        filter.date = {$gte:start,$lte:end};
+
+      }
+      //not -> today date
+      else{
+
+        const today = new Date().toISOString().split("T")[0];
+        filter.date = today;
+
+      }
+
+      const meals = await dailyMealCollection.find(filter).toArray();
+      res.json(meals);
+
+    }catch(err){
+      console.error(err);
+      res.status(500).json({message:"server error"})
+    }
+  });
+
+
+
+
+    // Today’s meals
+
+  {/*
+  app.get("/meals", async (req, res) => {
+    
+    const today = req.query.date || new Date().toISOString().split("T")[0]; 
+    const meals = await dailyMealCollection.find({ date: today }).toArray();
+    res.json(meals);
+  }); */}
+
+
+
+    //meals sid:
 
     app.get('/meals/:sid',async(req,res)=>{
         
@@ -229,6 +301,7 @@ app.post("/login", async (req, res) => {
         res.send(result);
 
     });
+
 
      //post api : save or updated meal
     app.post("/meals", async (req, res) => {
