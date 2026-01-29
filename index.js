@@ -276,13 +276,14 @@ async function run() {
 
 
     //guest_meal:
-    app.get("/guest_meal", async (req, res) => {
+    app.get("/guest-meals", async (req, res) => {
       const result = await guestMealCollection.find().toArray();
 
       console.log(result);
 
       res.send(result);
     });
+
 
     //guest meal input:
     app.post("/guest-meals",async(req,res)=>{
@@ -315,7 +316,7 @@ async function run() {
       console.log(result);
 
       res.json({success:true});
-      
+
     });
 
 
