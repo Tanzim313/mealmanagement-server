@@ -247,8 +247,8 @@ app.post("/login", async (req, res) => {
         const startDate = new Date(Number(year),Number(mon)-1,1);
         const endDate = new Date(Number(year),Number(mon),0);
 
-        const start = startDate.toISOString().split("T")[0];
-        const end = endDate.toISOString().split("T")[0];
+        const start = startDate.toLocaleDateString("en-CA",{timeZone:"Asia/Dhaka"});
+        const end = endDate.toLocaleDateString("en-CA",{timeZone:"Asia/Dhaka"});
 
 
         filter.date = {$gte:start,$lte:end};
@@ -256,9 +256,11 @@ app.post("/login", async (req, res) => {
       }
       //not -> today date
       else{
-
-        const today = new Date().toISOString().split("T")[0];
-        filter.date = today;
+          
+        const today = new Date();
+        
+        const localToday = today.toLocaleDateString("en-CA", { timeZone: "Asia/Dhaka" });
+        filter.date = localToday;
 
       }
 
