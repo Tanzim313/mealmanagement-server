@@ -284,6 +284,16 @@ async function run() {
       res.send(result);
     });
 
+    //guest meal input:
+    app.post("/guest-meals",async(req,res)=>{
+      const data = req.body;
+      const result = await guestMealCollection.insertOne(data);
+
+      console.log(result);
+      
+      res.json({success:true});
+    });
+
 
 
 
