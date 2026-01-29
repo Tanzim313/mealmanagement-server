@@ -286,12 +286,36 @@ async function run() {
 
     //guest meal input:
     app.post("/guest-meals",async(req,res)=>{
-      const data = req.body;
-      const result = await guestMealCollection.insertOne(data);
+      const {date,meals,rates,total} = req.body;
+
+      const filter = {date};
+      const updateDoc={
+        $set:{
+          meals,
+          rates,
+          total,
+          updatedAt:new Date(),
+        },
+        $setOnInsert:{
+          createdAt:new Date(),
+        },
+      };
+
+      const options = {upsert:true};
+
+
+
+
+      const result = await guestMealCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
 
       console.log(result);
-      
+
       res.json({success:true});
+      
     });
 
 
