@@ -50,24 +50,27 @@ async function run() {
       }
     };
 
-    //login
-    app.post("/login", async (req, res) => {
-      try {
-            const { email, password } = req.body;
-        const user = await userCollection.findOne({ email });
-        if (!user) return res.status(404).json({ error: "User not found" });
-        const valid = await bcrypt.compare(password, user.passwordHash);
-        if (!valid)
-          return res.status(401).json({ error: "Invalid credentials" });
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-          expiresIn: "1d",
-        });
-        res.json({ message: "Login successful", token });
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Internal server error" });
-      }
-    });
+    // Login
+app.post("/login", async (req, res) => {
+  const { email, password,} = req.body;
+
+  const user = await userCollection.findOne({ email });
+
+  if (!user) return res.status(401).json({ message: "email don't find" });
+
+  if (user.password !== password)
+      return res.status(400).json({ message: "Incorrect password" });
+
+
+  
+  res.json({
+    sid: user.sid,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    status:user.status,
+  });
+});
 
 
 
@@ -149,11 +152,22 @@ async function run() {
 
     //user:
     app.get("/users/profile/:email", async (req, res) => {
-      const { email } = req.params;
-      const result = await userCollection.findOne({ email });
-      console.log(result);
-      res.send(result);
-    });
+      try {
+        const { email } = req.params;
+        const result = await userCollection.findOne({ email });
+
+        if (!result) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        console.log(result);
+        res.json(result);
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
     //user role updated api:
 
