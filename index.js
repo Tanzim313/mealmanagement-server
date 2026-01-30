@@ -258,7 +258,7 @@ app.post("/login", async (req, res) => {
       else{
           
         const today = new Date();
-        
+
         const localToday = today.toLocaleDateString("en-CA", { timeZone: "Asia/Dhaka" });
         filter.date = localToday;
 
@@ -341,11 +341,38 @@ app.post("/login", async (req, res) => {
     
     app.get('/bazar',async(req,res)=>{
 
+      try{
+
+        const {month} = req.query;
+
+        let filter = {};
+
+
+        if(month){
+
+        const [year,mon] = month.split("-");
+
+        const startDate = new Date(Number(year),Number(mon)-1,1);
+        const endDate = new Date(Number(year),Number(mon),0);
+
+        const start = startDate.toLocaleDateString("en-CA",{timeZone:"Asia/Dhaka"});
+        const end = endDate.toLocaleDateString("en-CA",{timeZone:"Asia/Dhaka"});
+
+
+        filter.date = {$gte:start,$lte:end};
+
+        }
+
         const result = await bazarCollection.find().toArray();
 
         console.log(result);
 
         res.send(result);
+
+      }catch(err){
+        console.error(err);
+        res.status(500).json({message:"server error"});
+      }
 
     })
 
@@ -366,11 +393,40 @@ app.post("/login", async (req, res) => {
 
     //guest_meal:
     app.get("/guest-meals", async (req, res) => {
-      const result = await guestMealCollection.find().toArray();
 
-      console.log(result);
 
-      res.send(result);
+      try{
+
+        const {month} = req.query;
+
+        let filter = {};
+
+
+        if(month){
+
+        const [year,mon] = month.split("-");
+
+        const startDate = new Date(Number(year),Number(mon)-1,1);
+        const endDate = new Date(Number(year),Number(mon),0);
+
+        const start = startDate.toLocaleDateString("en-CA",{timeZone:"Asia/Dhaka"});
+        const end = endDate.toLocaleDateString("en-CA",{timeZone:"Asia/Dhaka"});
+
+        filter.date = {$gte:start,$lte:end};
+
+        }
+
+      const result = await guestMealCollection.find(filter).toArray();
+
+          console.log(result);
+
+          res.send(result);
+
+      }catch(err){
+        console.error(err);
+        res.status(500).json({message:"server error"});
+      }
+
     });
 
 
