@@ -10,7 +10,7 @@ require("dotenv").config();
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.7k1gh4c.mongodb.net/?appName=Cluster0`;
 
@@ -24,7 +24,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    
+    //await client.connect();
 
     const db = client.db("meal_db");
 
@@ -32,6 +33,8 @@ async function run() {
     const dailyMealCollection = db.collection("daily_meal"); //daily_meal collection
     const bazarCollection = db.collection("bazar"); //bazar collection
     const guestMealCollection = db.collection("guestmeal"); //guestmeal collection
+    const paymentCollection = db.collection("payment"); //payment collection
+
 
     //middleware
     const authMiddleware = async (req, res, next) => {
@@ -463,6 +466,82 @@ app.post("/login", async (req, res) => {
       res.json({success:true});
 
     });
+
+
+
+    //payment api.........
+
+    //Add payment api.....
+
+
+    app.post("/add-payment",async(req,res)=>{
+
+      const {sid,meal_serial,amount,date} =req.body;
+
+      const payment = {
+        sid,
+        meal_serial,
+        amount,
+        date,
+        createdAt: new Date(),
+
+      }
+
+      const result = await paymentCollection.insertOne(payment);
+
+
+      console.log(result);
+
+      res.json(result);
+
+
+    })
+
+    //get all payments.....
+
+    app.get("/get-payment",async(req,res)=>{
+      const payment = await paymentCollection
+                    .find()
+                    .sort({date:-1})
+                    .toArray();
+
+      console.log(payment);
+
+      res.json(payment);
+    })
+
+    
+    //update payment:
+    app.put("/:id",async(req,res)=>{
+      const id = req.params.id;
+
+      const result = await paymentCollection.updateOne(
+        {_id: new ObjectId(id)},
+        { $set: req.body }
+      );
+
+      res.json(result);
+    });
+
+    
+    //delete....
+
+
+    app.delete("/:id",async(req,res)=>{
+      const id = req.params.id;
+
+      const result = await paymentCollection.deleteOne(
+        {_id: new ObjectId(id)}
+      );
+
+      res.json(result);
+    });
+
+   
+
+
+
+
 
 
 
